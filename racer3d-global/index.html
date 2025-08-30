@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <title>سباق 3D</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <div id="hud">
+    <div><strong>المستوى:</strong> <span id="level">1</span></div>
+    <div><strong>السرعة:</strong> <span id="speed">0</span> كم/س</div>
+    <div><strong>الحالة:</strong> <span id="status">جاهز</span></div>
+  </div>
+
+  <div id="touch">
+    <button id="left">←</button>
+    <button id="right">→</button>
+    <button id="gas">⛽</button>
+    <button id="brk">⛔</button>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

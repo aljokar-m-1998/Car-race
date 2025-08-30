@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <title>سباق سيارات — المتصفح</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div><strong>المستوى:</strong> <span id="level">1</span></div>
+    <div><strong>اللفة:</strong> <span id="lap">0</span>/<span id="lapmax">2</span></div>
+    <div><strong>السرعة:</strong> <span id="speed">0</span> كم/س</div>
+    <div><strong>خصم AI:</strong> <span id="ai-state">...</span></div>
+    <div class="help"><strong>التحكم:</strong> الأسهم ↑ ↓ ← →</div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

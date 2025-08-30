@@ -1,0 +1,23 @@
+html,body { margin:0; height:100%; background:#0b0c10; }
+#c { width:100vw; height:100vh; display:block; touch-action:none; }
+#hud {
+  position:fixed; top:10px; left:10px; background:rgba(0,0,0,0.45);
+  color:#eee; padding:8px 12px; border-radius:10px; font-family:system-ui,sans-serif; font-size:14px;
+}
+strong { color:#66fcf1; }
+
+#touch {
+  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  display:grid; grid-template-areas:
+    "left gas right"
+    ". brk .";
+  gap:12px; align-items:center; justify-items:center;
+}
+#touch button {
+  width:64px; height:64px; border-radius:16px; border:none;
+  background:rgba(255,255,255,0.15); color:#fff; font-size:22px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+@media (max-width:420px) {
+  #touch button { width:58px; height:58px; font-size:20px; }
+}

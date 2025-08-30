@@ -1,0 +1,8 @@
+html, body { margin:0; padding:0; background:#0b0c10; color:#eee; height:100%; overflow:hidden; }
+#game { display:block; width:100vw; height:100vh; background:#1f2833; }
+#hud {
+  position:fixed; top:10px; left:10px; background:rgba(0,0,0,0.45);
+  padding:8px 12px; border-radius:8px; font-family:system-ui, sans-serif; font-size:14px;
+}
+#hud .help { margin-top:6px; color:#cfd; }
+strong { color:#66fcf1; }
