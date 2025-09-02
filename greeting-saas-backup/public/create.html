@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء بطاقة تهنئة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    #templates {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .template-card {
+      padding: 20px;
+      border-radius: 10px;
+      width: 200px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .template-card:hover {
+      transform: scale(1.05);
+    }
+    textarea {
+      width: 80%;
+      height: 100px;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e68900;
+    }
+    #result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>اختر قالبك</h2>
+  <div id="templates">جارٍ تحميل القوالب...</div>
+
+  <div id="form" style="display:none;">
+    <h3>اكتب رسالتك</h3>
+    <textarea id="message" placeholder="اكتب نص التهنئة هنا..."></textarea><br>
+    <button id="createBtn">إنشاء البطاقة</button>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    let selectedTemplate = null;
+
+    // جلب القوالب
+    fetch('/api/templates')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('templates');
+        container.innerHTML = '';
+        if (data.length === 0) {
+          container.innerHTML = '<p>لا توجد قوالب متاحة حالياً.</p>';
+          return;
+        }
+        data.forEach(tpl => {
+          const card = document.createElement('div');
+          card.className = 'template-card';
+          card.style.background = tpl.config.background;
+          card.innerHTML = `<h3>${tpl.name}</h3>`;
+          card.onclick = () => {
+            selectedTemplate = tpl.id;
+            document.getElementById('form').style.display = 'block';
+            window.scrollTo(0, document.body.scrollHeight);
+          };
+          container.appendChild(card);
+        });
+      });
+
+    // إنشاء البطاقة
+    document.getElementById('createBtn').onclick = () => {
+      const message = document.getElementById('message').value.trim();
+      if (!selectedTemplate) {
+        alert('اختر قالب أولاً');
+        return;
+      }
+      if (!message) {
+        alert('اكتب رسالة التهنئة');
+        return;
+      }
+
+      // إرسال البيانات للسيرفر
+      fetch('/api/cards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token') ? 'Bearer ' + localStorage.getItem('token') : ''
+        },
+        body: JSON.stringify({
+          template_id: selectedTemplate,
+          data: { message }
+        })
+      })
+      .then(res => res.json())
+      .then(result => {
+        if (result.slug) {
+          document.getElementById('result').innerHTML = `
+            <p>✅ تم إنشاء البطاقة بنجاح!</p>
+            <a href="/c/${result.slug}" target="_blank">اضغط هنا لعرض البطاقة</a>
+          `;
+        } else {
+          document.getElementById('result').innerHTML = `<p>❌ حدث خطأ: ${result.error || 'غير معروف'}</p>`;
+        }
+      });
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin Templates</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>إضافة قالب</h2>
+      <input id="email" placeholder="Admin Email" value="admin@example.com">
+      <input id="pass" placeholder="Admin Password" type="password" value="admin123">
+      <button class="primary" onclick="doLogin()">دخول</button>
+      <hr>
+      <input id="name" placeholder="اسم القالب">
+      <label><input type="checkbox" id="premium"> Premium</label>
+      <textarea id="config" rows="6" placeholder='{"bg":"linear-gradient(...)","effects":{"particles":true},"game":{"type":"collect","items":8}}'></textarea>
+      <button class="primary" onclick="addTemplate()">حفظ القالب</button>
+      <p class="notice" id="msg"></p>
+    </div>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script>
+    async function doLogin(){
+      const j = await login(document.getElementById('email').value, document.getElementById('pass').value);
+      alert(j.token ? 'Logged in' : (j.error||'error'));
+    }
+    async function addTemplate(){
+      try{
+        const cfg = JSON.parse(document.getElementById('config').value);
+        const r = await fetch('/api/admin/templates', { method:'POST', headers: API.headers(), body: JSON.stringify({ name: document.getElementById('name').value, is_premium: document.getElementById('premium').checked, config: cfg })});
+        const j = await r.json();
+        document.getElementById('msg').textContent = j.id ? 'تم الحفظ (ID '+j.id+')' : (j.error||'error');
+      } catch(e){ alert('Invalid JSON'); }
+    }
+  </script>
+</body>
+</html>

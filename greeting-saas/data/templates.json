@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "🎂 عيد ميلاد سعيد",
+    "is_premium": false,
+    "config": {
+      "background": "#ffe4e1",
+      "font": "Cairo",
+      "animation": "fade-in"
+    }
+  },
+  {
+    "id": 2,
+    "name": "🌙 رمضان كريم",
+    "is_premium": true,
+    "config": {
+      "background": "#f0f8ff",
+      "font": "Tajawal",
+      "animation": "slide-up"
+    }
+  }
+]

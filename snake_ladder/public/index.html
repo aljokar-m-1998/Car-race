@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎮 لعبة السلم والثعبان</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { margin:0; background:#222; color:#fff; text-align:center; }
+    canvas { background:#fff; display:block; margin:20px auto; border:5px solid #333; }
+    button { padding:15px; font-size:20px; background:#4CAF50; color:white; border:none; border-radius:10px; }
+  </style>
+</head>
+<body>
+  <h1>🎲 لعبة السلم والثعبان</h1>
+  <canvas id="gameCanvas" width="600" height="600"></canvas><br>
+  <button id="rollBtn">🎲 رمي النرد</button>
+  <p id="status"></p>
+  <audio id="diceSound" src="dice.mp3"></audio>
+  <script>
+    const socket = io();
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const tileSize = 60;
+    const boardSize = 10;
+    const diceSound = document.getElementById('diceSound');
+
+    let playerId, positions = {}, dice = 0, current = '';
+
+    const snakeImg = new Image();
+    const ladderImg = new Image();
+    snakeImg.src = 'snake.png';
+    ladderImg.src = 'ladder.png';
+
+    function drawBoard() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      let n = 1;
+      for(let row=0; row<boardSize; row++){
+        for(let col=0; col<boardSize; col++){
+          let x = col*tileSize, y = (boardSize-row-1)*tileSize;
+          ctx.fillStyle = (row+col)%2===0?'#eee':'#ddd';
+          ctx.fillRect(x,y,tileSize,tileSize);
+          ctx.fillStyle = "#000";
+          ctx.fillText(n++, x+5, y+15);
+        }
+      }
+      ctx.drawImage(snakeImg,200,100,150,300);
+      ctx.drawImage(ladderImg,300,300,100,200);
+
+      let colors = ['red','blue','green','orange'];
+      let i=0;
+      for(let id in positions){
+        let pos = positions[id];
+        if(pos<=0) continue;
+        let row = Math.floor((pos-1)/boardSize);
+        let col = (pos-1)%boardSize;
+        let x = col*tileSize + tileSize/4;
+        let y = (boardSize-row-1)*tileSize + tileSize/4;
+        ctx.fillStyle = colors[i++ % colors.length];
+        ctx.beginPath();
+        ctx.arc(x+tileSize/4,y+tileSize/4,15,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    socket.on('init', data => { playerId = data.id; positions = data.positions; drawBoard(); });
+    socket.on('update', data => {
+      positions = data.positions; dice = data.dice; current = data.current;
+      diceSound.play(); drawBoard();
+      document.getElementById('status').innerText = `🎲 النرد: ${dice} | الدور: ${current}`;
+    });
+
+    document.getElementById('rollBtn').addEventListener('click', () => { socket.emit('rollDice'); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+@media (max-width: 600px) {
+  #templates {
+    flex-direction: column;
+    align-items: center;
+  }
+  button {
+    width: 80%;
+  }
+}

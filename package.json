@@ -1,5 +1,26 @@
 {
   "dependencies": {
-    "express": "^5.1.0"
-  }
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "name": "home",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aljokar-m-1998/racer3d.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aljokar-m-1998/racer3d/issues"
+  },
+  "homepage": "https://github.com/aljokar-m-1998/racer3d#readme"
 }

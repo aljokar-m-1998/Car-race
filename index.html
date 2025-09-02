@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Car Race</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Three.js CDN -->
+  <script defer src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script defer src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <!-- HUD -->
+  <div id="hud">
+    <div id="score">Score: 0</div>
+    <div id="time">Time: 0.0s</div>
+    <div id="speed">Speed: 0</div>
+  </div>
+
+  <!-- Start Menu -->
+  <div id="menu" class="overlay">
+    <div class="card">
+      <h1>3D Car Race</h1>
+      <label>Difficulty</label>
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button id="startBtn">Start</button>
+      <p class="hint">Touch controls appear on mobile. Use ← → and ↑ ↓ on desktop.</p>
+    </div>
+  </div>
+
+  <!-- Game Over -->
+  <div id="gameover" class="overlay hidden">
+    <div class="card">
+      <h2>Game Over</h2>
+      <p id="finalScore">Score: 0</p>
+      <button id="restartBtn">Restart</button>
+    </div>
+  </div>
+
+  <!-- Touch Controls -->
+  <div id="touchControls" class="touch hidden">
+    <button class="btn" id="leftBtn">⟵</button>
+    <div class="vcol">
+      <button class="btn small" id="brakeBtn">▮▮</button>
+      <button class="btn small" id="accelBtn">▲</button>
+    </div>
+    <button class="btn" id="rightBtn">⟶</button>
+  </div>
+
+  <!-- Canvas -->
+  <canvas id="game"></canvas>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
