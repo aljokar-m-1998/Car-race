@@ -1,59 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3D Car Race</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Three.js CDN -->
-  <script defer src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script defer src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+    }
+    canvas {
+      display: block;
+    }
+    #ui {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      background: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      border: none;
+      background: #0a84ff;
+      color: white;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <!-- HUD -->
-  <div id="hud">
-    <div id="score">Score: 0</div>
-    <div id="time">Time: 0.0s</div>
-    <div id="speed">Speed: 0</div>
+  <div id="ui">
+    <h3>Car Race</h3>
+    <p>Use Arrow Keys or Touch to move</p>
+    <button onclick="restart()">Restart</button>
   </div>
+  <canvas id="gameCanvas"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-  <!-- Start Menu -->
-  <div id="menu" class="overlay">
-    <div class="card">
-      <h1>3D Car Race</h1>
-      <label>Difficulty</label>
-      <select id="difficulty">
-        <option value="easy">Easy</option>
-        <option value="normal" selected>Normal</option>
-        <option value="hard">Hard</option>
-      </select>
-      <button id="startBtn">Start</button>
-      <p class="hint">Touch controls appear on mobile. Use ← → and ↑ ↓ on desktop.</p>
-    </div>
-  </div>
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x222222);
 
-  <!-- Game Over -->
-  <div id="gameover" class="overlay hidden">
-    <div class="card">
-      <h2>Game Over</h2>
-      <p id="finalScore">Score: 0</p>
-      <button id="restartBtn">Restart</button>
-    </div>
-  </div>
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 10);
 
-  <!-- Touch Controls -->
-  <div id="touchControls" class="touch hidden">
-    <button class="btn" id="leftBtn">⟵</button>
-    <div class="vcol">
-      <button class="btn small" id="brakeBtn">▮▮</button>
-      <button class="btn small" id="accelBtn">▲</button>
-    </div>
-    <button class="btn" id="rightBtn">⟶</button>
-  </div>
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 10, 7.5);
+    scene.add(light);
 
-  <!-- Canvas -->
-  <canvas id="game"></canvas>
+    const ambient = new THREE.AmbientLight(0x404040, 1.5);
+    scene.add(ambient);
 
-  <script src="script.js" defer></script>
+    const roadGeometry = new THREE.PlaneGeometry(20, 200);
+    const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const road = new THREE.Mesh(roadGeometry, roadMaterial);
+    road.rotation.x = -Math.PI / 2;
+    scene.add(road);
+
+    const carGeometry = new THREE.BoxGeometry(1, 0.5, 2);
+    const carMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    const car = new THREE.Mesh(carGeometry, carMaterial);
+    car.position.y = 0.25;
+    scene.add(car);
+
+    let obstacles = [];
+    function createObstacle() {
+      const geo = new THREE.BoxGeometry(1, 0.5, 1);
+      const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+      const obs = new THREE.Mesh(geo, mat);
+      obs.position.set((Math.random() - 0.5) * 10, 0.25, -100);
+      scene.add(obs);
+      obstacles.push(obs);
+    }
+
+    function resetObstacles() {
+      obstacles.forEach(o => scene.remove(o));
+      obstacles = [];
+      for (let i = 0; i < 10; i++) {
+        createObstacle();
+      }
+    }
+    resetObstacles();
+
+    let speed = 0.5;
+    let moveLeft = false, moveRight = false;
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") moveLeft = true;
+      if (e.key === "ArrowRight") moveRight = true;
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.key === "ArrowLeft") moveLeft = false;
+      if (e.key === "ArrowRight") moveRight = false;
+    });
+
+    canvas.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      if (touch.clientX < window.innerWidth / 2) {
+        moveLeft = true;
+      } else {
+        moveRight = true;
+      }
+    });
+    canvas.addEventListener("touchend", () => {
+      moveLeft = false;
+      moveRight = false;
+    });
+
+    function restart() {
+      car.position.set(0, 0.25, 0);
+      resetObstacles();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (moveLeft) car.position.x -= 0.1;
+      if (moveRight) car.position.x += 0.1;
+
+      obstacles.forEach(obs => {
+        obs.position.z += speed;
+        if (obs.position.z > 10) {
+          obs.position.z = -100;
+          obs.position.x = (Math.random() - 0.5) * 10;
+        }
+        if (Math.abs(car.position.x - obs.position.x) < 1 && Math.abs(car.position.z - obs.position.z) < 1) {
+          alert("Game Over!");
+          restart();
+        }
+      });
+
+      camera.position.z = car.position.z + 10;
+      camera.position.x = car.position.x;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
